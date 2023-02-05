@@ -22,6 +22,9 @@
     </div>
     <script type='text/javascript' src="//wurfl.io/wurfl.js"></script>
     <script type="text/javascript" src="https://unpkg.com/platform@1.3.6/platform.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <?php include 'store.php'; ?>
     <script src="./main.js"></script>
 </body>
 </html>
+
