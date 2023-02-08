@@ -1,20 +1,16 @@
 <?php
 
 if(isset($_POST['data'])) {
-    $data=json_decode(json_encode($_POST['data']), false);
-    $file = fopen('data.json', 'a+');
-    $existingData = json_decode(file_get_contents('data.json'));
-    if(!empty($existingData)) {
-        $existingData[]=$data;
-        $mergedData = $existingData;
-    } 
-    else {
-        $mergedData = array($data);
+    $csvFile = 'data.csv';
+    $data = json_decode($_POST['data'], true);
+    if(file_exists($csvFile) && filesize("data.csv") != 0) {
+    $fp = fopen($csvFile, 'a');
+    } else {
+    $fp = fopen($csvFile, 'w');
+    fputcsv($fp, array_keys($data));
     }
-    ftruncate($file, 0);
-    fwrite($file, json_encode($mergedData));
-    fclose($file);
+    fputcsv($fp, $data);
+    fclose($fp);
 }
 ?>
-
 

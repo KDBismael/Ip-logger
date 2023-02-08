@@ -1,15 +1,11 @@
 var getIpInfo=getIpInfo();
-// console.log(getIpInfo)
 var InternetSpeed=getInternetSpeed();
 var getHttpHeader=getHttpHeader();
 var getScreeResolution=getScreeResolution()
-// getIpInfo.query
-// `${getIpInfo.city} / ${getIpInfo.country}`
-// getIpInfo.isp
 var userData={
-    IpAddress:getIpInfo.ip,//ok
+    IpAddress:window.ipaddr.IPv4.isIPv4(getIpInfo.ip)?getIpInfo.ip:getIpV4Info(),//ok
     BrowserTypeAndVersion:platform.name+' version '+platform.version,//ok
-    OperatingSystem:platform.os,//ok
+    OperatingSystem:`architecture:${platform.os.architecture}, family:${platform.os.family}, version:${platform.os.version},`,//ok 
     DeviceType:WURFL.form_factor,//ok
     ScreenResolution:getScreeResolution,//ok
     TimeAndDateOfVisit:getDate(),//ok
@@ -19,24 +15,22 @@ var userData={
     LanguagePreferences:navigator.language,//ok
     UserAgentString:navigator.userAgent,//ok
     WebPageVisited:document.location.href,//ok
-    InternetSpeedAndConnectionType:'',
+    InternetSpeedAndConnectionType:'',//ok
     HTTPHeaders:getHttpHeader.headers,//ok
-    deviceName:'',
-    deviceModel:'',
-    deviceManufacturer:'',
-    deviceSerialNumber:'',
-    deviceMacAddress:'',
     deviceBatteryLevel:'',
     deviceChargingStatus:'',
 }
 function getIpInfo() {
     var http=new XMLHttpRequest();
-    // http.open('GET','http://ip-api.com/json',false);
-    // http.open('GET','https://ipinfo.io/',false);
     http.open('GET','https://ipapi.co/json/',false);
     http.send(null);
     return JSON.parse(http.responseText);
-    // return http.responseText;
+}
+function getIpV4Info() {
+    var http=new XMLHttpRequest();
+    http.open('GET','https://ipv4.icanhazip.com/',false);
+    http.send(null);
+    return JSON.parse(http.responseText);
 }
 function getScreeResolution(){
     var screenSize = '';
@@ -51,8 +45,7 @@ function getHttpHeader (){
     var req = new XMLHttpRequest();
     req.open('GET', document.location, false);
     req.send(null);
-    var headers = req.getAllResponseHeaders().toLowerCase();
-    // let date= headers.substring(headers.indexOf('date'),headers.indexOf('etag')).replace('date: ','')
+    var headers = req.getAllResponseHeaders().toLowerCase().split('\r\n').join(", ");
     return {headers};
 }
 function fileTodownload(){
@@ -86,7 +79,7 @@ function fileTodownload(){
     };
 }
 //Battery information
-function getBatteryInfor(){
+function getBatteryInfo(){
     if(navigator.getBattery){
         navigator.getBattery().then((battery) => {
             userData.deviceChargingStatus=battery.charging? 'Charging' : 'Not charging'
@@ -122,26 +115,9 @@ function getInternetSpeed() {
         testImage.src = "../assets/Logo connection.png";
     });
 }
-getBatteryInfor();
+getBatteryInfo();
 fileTodownload();
-
-// UserInfo.getInfo(function(data) {
-//     userData.IpAddress=data.ip_address
-//     userData.Location=`${data.city.name} / ${data.country.name} / ${data.continent.name}`
-//     userData.TimeAndDateOfVisit=data.request_date
-// },function(err) {
-    //     console.log(err);
-    // });
 getInternetSpeed().then(function(speed) {
     userData.InternetSpeedAndConnectionType=`${speed} KB/s`;
-    // console.log("Internet speed: " + speed + " KB/s");
-    console.log(userData)
     sendDataToStore();
 });
-
-//Store data only once in the same browser
-// if (localStorage.getItem('Run') !== 'true') {
-    // Run the function
-    // Set the flag in local storage
-    // localStorage.setItem('Run', 'true');
-// }
